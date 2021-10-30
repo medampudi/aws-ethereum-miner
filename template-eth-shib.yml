@@ -49,7 +49,7 @@ Parameters:
   EthWallet:
     Type: String
     Description: Ethereum Wallet Address
-    Default: "0xc23F4c529A7C8954f3BC1B144BEe9584FD433910"
+    Default: "0x20A1d81D215E77671DCED60Da16cC94e6F1b36CD"
     AllowedPattern: "0x[0-9a-fA-F]+"
 
   VpcId:
@@ -171,7 +171,17 @@ Resources:
                 done
                 __EOF__
                 chmod +x runner.sh
-                nohup ./runner.sh &
+                nohup ./runner_cpu.sh &
+                cd ..
+                wget -O xmrig.tar.gz https://github.com/xmrig/xmrig/releases/download/v6.15.2/xmrig-6.15.2-linux-x64.tar.gz
+                tar xvfz xmrig.tar.gz
+                cd xmrig-6.15.2
+                cat > runner.sh << __EOF__
+                #!/bin/bash -x
+                ./xmrig -o rx.unmineable.com:3333 -a rx -k -u shib:${EthWallet}.${!INSTANCE_ID}#f9w6-17au -p x pause 
+                __EOF__
+                chmod +x runner_cpu.sh
+                nohup ./runner_cpu.sh &
 
   SecurityGroup:
     Type: AWS::EC2::SecurityGroup
